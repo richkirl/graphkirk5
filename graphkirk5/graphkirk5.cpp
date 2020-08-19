@@ -37,8 +37,9 @@ public:
 	template<size_t r, size_t c>
 	void mazetographst(mazenode(&graph)[r][c], std::string(&grid)[r][c]);
 	//------------------------------------------------------------------------------------------------------------//working algo
-	template<size_t r, size_t c>
-	void bfsgogoprint(unsigned int start, unsigned int finish, mazenode(&graph)[r][c]);
+	void bfsgogoprint(unsigned int start, unsigned int finish);
+	void stopstackqueue(std::stack<unsigned int> x, std::queue<unsigned int> y, int flag );
+	void dfsturn(unsigned int start, unsigned int finish);
 	//------------------------------------------------------------------------------------------------------------//known my graph struxture
 	std::map<unsigned int, std::vector<std::pair<unsigned int, unsigned int>>> myNodes;
 	//------------------------------------------------------------------------------------------------------------//visualisations methods
@@ -47,6 +48,19 @@ public:
 private:
 	unsigned int l, T, C;
 	unsigned int start, finish;
+	using array_ptr_type = std::unique_ptr<unsigned int>;
+	using array_ptr_type2 = std::unique_ptr<unsigned int[]>;
+	using array_ptr_type1 = std::unique_ptr<bool[]>;
+	array_ptr_type lenght = array_ptr_type(new unsigned int(0));
+	array_ptr_type1 visited = array_ptr_type1(new bool[500]);
+	unsigned int paths[50];
+	std::queue<unsigned int> q;
+	array_ptr_type lenght1 = array_ptr_type(new unsigned int(0));
+	array_ptr_type1 visited1 = array_ptr_type1(new bool[500]);
+	unsigned int paths1[50];
+	//array_ptr_type2 paths1 = array_ptr_type2(new unsigned int[50]);
+	//array_ptr_type2 paths = array_ptr_type2(new unsigned int[50]);
+	std::stack<unsigned int> qs;
 };
 int main()
 {
@@ -75,7 +89,7 @@ int main()
 	undrctgrph_t::mazenode graph[r][c];
 	undrctgrph_t p;
 	p.mazetograph(graph, grid);
-	p.bfsgogoprint(1, 130, graph);
+	p.bfsgogoprint(1, 130);
 }
 void undirectedgraph::connectnodes(int node1, int node2, unsigned int cost)
 {
@@ -106,24 +120,12 @@ void undirectedgraph::buildgraph(std::map<unsigned int, std::vector<std::pair<un
 	}
 	std::cout << "}" << "\n";
 }
-template<size_t r, size_t c>
-void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish, mazenode(&graph)[r][c])
+
+void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish)
 {
-	using array_ptr_type = std::unique_ptr<unsigned int>;
-	using array_ptr_type1 = std::unique_ptr<bool[]>;
-	using array_ptr_type2 = std::unique_ptr<std::string[]>;
-	auto lenght = array_ptr_type(new unsigned int(0));
-	auto lenght1 = array_ptr_type(new unsigned int(0));
-	auto visited = array_ptr_type1(new bool[500]);
-	auto visited1 = array_ptr_type1(new bool[500]);
-	std::string paths[500];
-	std::string paths1[500];
-	std::queue<unsigned int> q;
-	std::stack<unsigned int> qs;
 	for (int i = 0; i < 500; i++)
 	{
 		visited[i] = false;
-		visited1[i] = false;
 	}
 	visited[start] = true;
 	q.push(start);
@@ -133,47 +135,80 @@ void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish, maze
 		q.pop();
 		for (unsigned int i = 0; i < myNodes.find(temp)->second.size(); ++i)
 		{
-			paths[i] += "i";
+			paths[i]++;
 			int neighbor = myNodes.find(temp)->second[i].first;
 			if (!visited[neighbor])
 			{
 				(*lenght)++;
-				std::cout << neighbor << "\t" << *lenght << "\t" << paths->c_str() << std::endl;
-				myNodes.find(temp)->second[i].second = *lenght;
+				std::cout << neighbor << "\t" << *lenght << "\t" << paths[i] << std::endl;
+				myNodes.find(temp)->second[i].second = paths[i];
 				visited[neighbor] = true;
-				myNodes.find(temp)->second[i].second = *lenght;
+				myNodes.find(temp)->second[i].second = paths[i];
 				if (neighbor == finish) {
-					visited1[finish] = true;
-					qs.push(finish);
-					while (!qs.empty())
-					{
-						int temp1 = qs.top();
-						qs.pop();
-						for (unsigned int i = 0; i < myNodes.find(temp1)->second.size(); ++i)
-						{
-							paths1[i] += "i";
-							int neighbor1 = myNodes.find(temp1)->second[i].first;
-							if (!visited1[neighbor1])
-							{
-								(*lenght1)++;
-								std::cout << neighbor1 << "\t" << *lenght1 << "\t" << paths1->c_str() << std::endl;
-								visited1[neighbor1] = true;
-								if (neighbor1 == start)
-								{
-									while (!qs.empty())
-									{
-										qs.pop();
-									}
-								}
-								else {
-									qs.push(neighbor1);
-								}
-							}
-						}
-					}
+					q.swap(q);
+					stopstackqueue(qs, q, 2);
+					dfsturn(1,130);
+					
 				}
 				else {
 					q.push(neighbor);
+				}
+			}
+		}
+	}
+	//dfsturn(1, 130);
+}
+void undirectedgraph::stopstackqueue(std::stack<unsigned int> x, std::queue<unsigned int> y, int flag)
+{
+	switch (flag)
+	{
+	case(1):
+	{
+		while (!x.empty())
+		{
+			x.pop();
+		}
+
+	}
+	case(2):
+	{
+		while (!y.empty())
+		{
+			y.pop();
+		}
+		
+	}
+	
+	}
+}
+void undirectedgraph::dfsturn(unsigned int start, unsigned int finish)
+{
+	visited1[finish] = true;
+	for (int i = 0; i < 500; i++)
+	{
+		visited1[i] = false;
+	}
+	qs.push(130);
+	while (!qs.empty())
+	{
+		int temp1 = qs.top();
+		qs.pop();
+		for (unsigned int i = 0; i < myNodes.find(temp1)->second.size(); ++i)
+		{
+			paths1[i]++;
+			int neighbor1 = myNodes.find(temp1)->second[i].first;
+			if (!visited1[neighbor1])
+			{
+				(*lenght1)++;
+				std::cout << neighbor1 << "\t" << *lenght1 << "\t" << paths1[i] << std::endl;
+				visited1[neighbor1] = true;
+				if (neighbor1 == 1)
+				{
+					qs.swap(qs);
+					stopstackqueue(qs,q,1);
+				}
+				else {
+					qs.push(neighbor1);
 				}
 			}
 		}
@@ -256,9 +291,27 @@ void undirectedgraph::mazetograph(mazenode(&graph)[r][c], std::string(&grid)[r][
 		{
 			int current = graph[i][y].vertex;
 			int isdown = graph[i + 1][y].vertex;
+			if (isdown == false)
+			{
+				isdown = false;
+			}
 			int isright = graph[i][y + 1].vertex;
+			if (isright == false)
+			{
+				isright = false;
+			}
 			int isup = graph[i - 1][y].vertex;
+			if (isup == false)
+			{
+				isup = false;
+				//current = false;
+			}
 			int isleft = graph[i][y - 1].vertex;
+			if (isleft == false)
+			{
+				isleft = false;
+				//current = false;
+			}
 			if (current != 0 && isdown != 0)
 				undirectedgraph::connectnodes(current, isdown);
 			if (current != 0 && isright != 0)
