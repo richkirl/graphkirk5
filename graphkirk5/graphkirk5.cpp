@@ -48,6 +48,7 @@ public:
 private:
 	unsigned int l, T, C;
 	unsigned int start, finish;
+	//------------------------------------------------------------------------------------------------------------//bfs
 	using array_ptr_type = std::unique_ptr<unsigned int>;
 	using array_ptr_type2 = std::unique_ptr<unsigned int[]>;
 	using array_ptr_type1 = std::unique_ptr<bool[]>;
@@ -55,11 +56,10 @@ private:
 	array_ptr_type1 visited = array_ptr_type1(new bool[500]);
 	unsigned int paths[50];
 	std::queue<unsigned int> q;
+	//------------------------------------------------------------------------------------------------------------//dfs
 	array_ptr_type lenght1 = array_ptr_type(new unsigned int(0));
 	array_ptr_type1 visited1 = array_ptr_type1(new bool[500]);
 	unsigned int paths1[50];
-	//array_ptr_type2 paths1 = array_ptr_type2(new unsigned int[50]);
-	//array_ptr_type2 paths = array_ptr_type2(new unsigned int[50]);
 	std::stack<unsigned int> qs;
 };
 int main()
@@ -84,12 +84,13 @@ int main()
 	{"#",".",".",".",".",".","#","#",".",".",".",".",".",".","#","#",".",".",".",".",".",".","#",".",".",".",".","#","#","#"},
 	{"#",".",".",".","#","#","#","#",".",".","#","#",".",".","#","#",".",".","#","#",".",".","#",".",".","#",".",".",".","#"},
 	{"#",".",".",".",".",".",".",".",".",".","#","#",".",".",".",".",".",".","#","#",".",".",".",".",".","#",".","C",".","#"},
-	{"#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#"} };
+	{"#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#","#"}};
 	using undrctgrph_t = undirectedgraph;
 	undrctgrph_t::mazenode graph[r][c];
 	undrctgrph_t p;
 	p.mazetograph(graph, grid);
 	p.bfsgogoprint(1, 130);
+	//p.dfsturn(1, 130);
 }
 void undirectedgraph::connectnodes(int node1, int node2, unsigned int cost)
 {
@@ -147,8 +148,7 @@ void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish)
 				if (neighbor == finish) {
 					q.swap(q);
 					stopstackqueue(qs, q, 2);
-					dfsturn(1,130);
-					
+					dfsturn(1, 130);
 				}
 				else {
 					q.push(neighbor);
@@ -166,29 +166,31 @@ void undirectedgraph::stopstackqueue(std::stack<unsigned int> x, std::queue<unsi
 	{
 		while (!x.empty())
 		{
-			x.pop();
+			//x.pop();
+			while (!x.empty())
+			{
+				std::stack<unsigned int>().swap(x);
+			}
 		}
-
 	}
 	case(2):
 	{
 		while (!y.empty())
 		{
 			y.pop();
+			//y=std::stack<unsigned int>();
 		}
-		
 	}
-	
 	}
 }
 void undirectedgraph::dfsturn(unsigned int start, unsigned int finish)
 {
-	visited1[finish] = true;
+	visited1[129] = true;
 	for (int i = 0; i < 500; i++)
 	{
 		visited1[i] = false;
 	}
-	qs.push(130);
+	qs.push(129);
 	while (!qs.empty())
 	{
 		int temp1 = qs.top();
@@ -204,7 +206,8 @@ void undirectedgraph::dfsturn(unsigned int start, unsigned int finish)
 				visited1[neighbor1] = true;
 				if (neighbor1 == 1)
 				{
-					qs.swap(qs);
+					std::stack<unsigned int>().swap(qs);
+					//qs.empty();
 					stopstackqueue(qs,q,1);
 				}
 				else {
