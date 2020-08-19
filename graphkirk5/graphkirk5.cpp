@@ -5,6 +5,7 @@
 #include <queue>
 #include <stack>
 #include <sstream>
+#include <memory>
 class undirectedgraph
 {
 public:
@@ -105,17 +106,23 @@ void undirectedgraph::buildgraph(std::map<unsigned int, std::vector<std::pair<un
 template<size_t r, size_t c>
 void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish, mazenode(&graph)[r][c])
 {
-	unsigned int lenght = 0;
-	unsigned int lenght1 = 0;
-	bool visited[500];
+	using array_ptr_type = std::unique_ptr<unsigned int>;
+	using array_ptr_type1 = std::unique_ptr<bool[]>;
+	using array_ptr_type2 = std::unique_ptr<std::string[]>;
+	auto lenght = array_ptr_type(new unsigned int(0));
+	auto lenght1 = array_ptr_type(new unsigned int(0));
+	auto visited = array_ptr_type1(new bool[500]);
+	auto visited1 = array_ptr_type1(new bool[500]);
+	std::string paths[500];
+	std::string paths1[500];
+	std::queue<unsigned int> q;
+	std::stack<unsigned int> qs;
 	for (int i = 0; i < 500; i++)
 	{
 		visited[i] = false;
+		visited1[i] = false;
 	}
 	visited[start] = true;
-	std::string paths[50];
-	std::string paths1[50];
-	std::queue<int> q;
 	q.push(start);
 	while (q.size() > 0)
 	{
@@ -127,20 +134,13 @@ void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish, maze
 			int neighbor = myNodes.find(temp)->second[i].first;
 			if (!visited[neighbor])
 			{
-				lenght++;
-				std::cout << neighbor << " " << lenght <<"\t"<<paths->c_str()<< std::endl;
-				myNodes.find(temp)->second[i].second = lenght;
+				(*lenght)++;
+				std::cout << neighbor << "\t" << *lenght << "\t" << paths->c_str() << std::endl;
+				myNodes.find(temp)->second[i].second = *lenght;
 				visited[neighbor] = true;
-				myNodes.find(temp)->second[i].second = lenght;
+				myNodes.find(temp)->second[i].second = *lenght;
 				if (neighbor == finish) {
-					//q.empty();
-					bool visited1[500];
-					for (int i = 0; i < 500; i++)
-					{
-						visited1[i] = false;
-					}
 					visited1[finish] = true;
-					std::stack<int> qs;
 					qs.push(finish);
 					while (!qs.empty())
 					{
@@ -152,12 +152,9 @@ void undirectedgraph::bfsgogoprint(unsigned int start, unsigned int finish, maze
 							int neighbor1 = myNodes.find(temp1)->second[i].first;
 							if (!visited1[neighbor1])
 							{
-
-								lenght1++;
-								std::cout << neighbor1 << " " << lenght1<<"\t" <<paths1->c_str() << std::endl;
-								//myNodes.find(temp)->second[i].second = lenght1;
+								(*lenght1)++;
+								std::cout << neighbor1 << "\t" << *lenght1 << "\t" << paths1->c_str() << std::endl;
 								visited1[neighbor1] = true;
-								//myNodes.find(temp)->second[i].second = lenght1;
 								if (neighbor1 == start)
 								{
 									while (!qs.empty())
